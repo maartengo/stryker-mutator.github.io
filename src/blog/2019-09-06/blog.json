@@ -1,0 +1,5 @@
+{
+    "title": "Integrating Stryker.NET with git and Azure Devops",
+    "description": "Stryker.NET 0.14 is here! It should make integrating with Azure Devops a lot more easy and speed up your PR builds. So how does this work?",
+    "date": "20 Sep 2019"
+}

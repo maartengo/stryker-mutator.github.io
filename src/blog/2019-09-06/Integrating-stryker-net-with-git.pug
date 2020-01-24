@@ -1,0 +1,59 @@
+extends ../../layout/blog-layout.pug
+block content
+    :markdown-it 
+        After focussing on performance for a few months we wanted to focus on integrating with Azure Devops. To do that we created some new features.
+        This will help you improve your test quality using continuous integration. 
+
+        ## ✨ What's new
+        * Azure Devlops extension
+        A new extension has been uploaded to the Visual Studio Marketplace. It adds a new tab to your Azure Pipelines build result where the Stryker.NET html report will be shown.
+
+        TODO: Add screenshot
+
+        * Enable the new diff feature
+        With the diff feature enabled Stryker.NET will check your git repo and find the difference between your current working directory and the 'master' branch. Then it will only mutate the files that have been changed on your feature branch.
+        For example, when 2 files have changed in your feature branch, only the mutations in those files will be placed. This can speed up your build progress greatly.
+
+        * Upload your result to the stryker dashboard
+        If your project is open source you could even upload your stryker result to our dashboard for free!
+        Enable the new dashboard reporter and you can show your mutation score as a badge on your readme.
+
+        ## 🚀 Setup
+        To get Stryker up and running in your pipelines follow these 3 steps:
+
+        ### 1. Add stryker to your build definition.
+        ```
+          - job: RunStryker
+            displayName: Run stryker.net
+            condition: eq(variables['Build.Reason'], 'PullRequest')
+            timeoutInMinutes: 240
+            steps:
+            - task: DotNetCoreCLI@2
+            displayName: 'Install dotnet-stryker'
+            inputs:
+                command: custom
+                custom: tool
+                arguments: install dotnet-stryker -g
+                includeNuGetOrg: true
+            - script: dotnet stryker --reporters "['html']" --diff
+            condition: succeeded()
+            displayName: Run Stryker on Stryker.CLI
+            workingDirectory: 'src\Stryker.CLI\Stryker.CLI.UnitTest'
+        ```
+
+        Make sure the "html" reporter is enabled so the Azure Devops Extension can display the html file. Also enable the diff feature if you use Stryker in your pull request builds.
+
+        ### 2. Download the Azure Devops Extension
+
+        TODO: add url
+
+        ### 3. Enable the dashboard reporter
+        Note: This step is only advised for open source projects. 
+
+        When you enable the dashboard reporter you should pass your project name, version, module and api-key.
+        ```
+        dotnet stryker --reporters "['html', 'dashboard']" --dashboard-project github.com/stryker-mutator/stryker-net --dashboard-version master --dashboard-module core --dashboard-api-key $(Stryker.Dashboard.Api.Key)
+        ```
+
+        ## Result
+        Now every PR should trigger Stryker.NET and show the html report trough the azure-devops extension. And you have an url endpoint where you can view your up to date mutationscore.
